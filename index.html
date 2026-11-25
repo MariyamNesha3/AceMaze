@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ace Maze case study by Mariyam Nesha – arrow puzzle game UI and game design.">
+  <title>Ace Maze | Mariyam Nesha</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+
+    :root {
+      --orange: #F47B20;
+      --brown: #7A3E10;
+      --soft: #FCE8DC;
+      --soft-2: #FDF2EA;
+      --label: #F9CDAE;
+      --dark: #161616;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', sans-serif; background: #fff; color: #111; overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; }
+    img { display: block; max-width: 100%; }
+
+    /* ---------- Navbar ---------- */
+    .nav-wrap { padding: 40px 70px 0; }
+    .navbar {
+      max-width: 1300px; margin: 0 auto;
+      background: var(--dark); border-radius: 50px; height: 86px;
+      padding: 0 8px 0 34px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .navbar .logo img { height: 100px; }
+    .nav-links { display: flex; list-style: none; gap: 10px; }
+    .nav-links a {
+      display: block; color: #fff; font-size: 20px;
+      padding: 18px 40px; border-radius: 40px;
+      transition: background .25s, color .25s;
+    }
+    .nav-links a:hover { color: var(--orange); }
+    .nav-links a.active { background: var(--orange); color: #fff; }
+
+    main { max-width: 1300px; margin: 0 auto; padding: 0 70px 100px; box-sizing: content-box; }
+
+    /* ---------- Section titles ---------- */
+    .sec-title { text-align: center; font-size: 40px; font-weight: 600; letter-spacing: -0.5px; }
+    .sec-title span { color: var(--orange); }
+    .sec-sub { text-align: center; font-size: 18px; line-height: 1.6; color: #333; max-width: 760px; margin: 18px auto 0; }
+    .sec-sub.w-720 { max-width: 720px; }
+    section.block { margin-top: 110px; position: relative; }
+    .soft-box { background: var(--soft); border-radius: 36px; padding: 70px 70px 80px; position: relative; }
+
+    /* ---------- Hero ---------- */
+    .page-title { display: flex; align-items: center; justify-content: center; gap: 22px; margin: 70px 0 44px; }
+    .page-title h1 { font-size: 52px; font-weight: 600; letter-spacing: -0.5px; }
+    .page-title h1 span { color: var(--orange); }
+
+    /* Photo + card row */
+    .hero { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.58fr); gap: 48px; align-items: stretch; }
+
+    /* Photo with see-through white frame */
+    .hero-img { position: relative; height: 100%; border-radius: 30px; overflow: hidden; background: #F1E6DD; box-shadow: 0 10px 30px rgba(0,0,0,.08); cursor: zoom-in; }
+    .hero-img img { width: 100%; height: 100%; object-fit: cover; }
+    .hero-img::after { content: ""; position: absolute; inset: 0; border: 16px solid rgba(255,255,255,.35); border-radius: 30px; pointer-events: none; }
+
+    /* Beige card */
+    .overview { background: #F5E7DC; border-radius: 30px; padding: 44px 44px 40px; }
+    .overview h2 { color: var(--brown); font-size: 30px; font-weight: 600; margin-bottom: 14px; }
+    .overview > p { font-size: 18px; line-height: 1.6; color: #333; margin-bottom: 30px; }
+
+    /* Tools / Role / Focus boxes */
+    .ov-row { display: grid; grid-template-columns: minmax(0,0.62fr) minmax(0,1fr); gap: 26px; margin-bottom: 26px; }
+    .fieldset { min-width: 0; border: 1.5px solid #E2C9B8; border-radius: 14px; padding: 0 22px 18px; position: relative; }
+    .fieldset legend { font-size: 22px; font-weight: 600; padding: 0 8px; margin-left: -8px; }
+    .fieldset .tools { display: flex; gap: 36px; padding: 8px 26px 0; }
+    .fieldset .tools img { width: 50px; height: 50px; border-radius: 10px; }
+    .fieldset .val { font-size: 17px; font-weight: 500; padding-top: 16px; line-height: 1.7; }
+    .overview > .fieldset .val { text-align: justify; }   /* Focus text lines up on both sides */
+
+    /* ---------- Mapping ---------- */
+    .map-img { background: var(--soft-2); border-radius: 24px; margin-top: 44px; padding: 26px; cursor: zoom-in; }
+    .map-img img { width: 100%; height: auto; margin: 0 auto; min-height: 200px; object-fit: contain; }
+
+    /* ---------- Wireframes ---------- */
+    .wires { display: grid; grid-template-columns: 1fr 70px 1fr 70px 1fr; align-items: center; max-width: 1000px; margin: 46px auto 0; }
+    .wire { text-align: center; }
+    /* whole wireframe shown as it is: no extra box, nothing cropped */
+    .wire .shot { cursor: zoom-in; }
+    .wire .shot img { width: 100%; height: auto; }
+    .wire span { display: block; font-size: 18px; margin-top: 18px; }
+    .arrow { height: 2px; background: #C0753E; position: relative; margin: 0 10px; top: -22px; }
+    .arrow::after { content: ""; position: absolute; right: -2px; top: -5px; width: 10px; height: 10px; border-right: 2px solid #C0753E; border-top: 2px solid #C0753E; transform: rotate(45deg); }
+
+    /* ---------- Design system ---------- */
+    .ds-box { padding-bottom: 150px; }
+    .typo { display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: center; margin-top: 50px; padding: 0 60px; }
+    .typo h5 { font-size: 22px; font-weight: 500; }
+    .typo .fname { font-family: 'Onest', sans-serif; font-size: 96px; font-weight: 700; line-height: 1.15; margin: 6px 0 14px; }
+    .typo .chars { font-family: 'Onest', sans-serif; font-weight: 300; font-size: 30px; line-height: 1.2; color: #8a8a8a; word-break: break-all; }
+    .aa-wrap { text-align: center; }
+    .aa {
+      display: inline-flex; align-items: flex-end; gap: 2px;
+      font-family: 'Onest', sans-serif; line-height: .8;
+      padding: 18px 14px 10px; position: relative;
+      background-image:
+        repeating-linear-gradient(90deg, #999 0 8px, transparent 8px 16px),
+        repeating-linear-gradient(90deg, #999 0 8px, transparent 8px 16px),
+        repeating-linear-gradient(0deg, #999 0 8px, transparent 8px 16px),
+        repeating-linear-gradient(0deg, #999 0 8px, transparent 8px 16px);
+      background-size: 100% 1.5px, 100% 1.5px, 1.5px 100%, 1.5px 100%;
+      background-position: 0 6px, 0 calc(100% - 4px), 6px 0, calc(100% - 6px) 0;
+      background-repeat: no-repeat;
+    }
+    .aa .A { font-size: 220px; font-weight: 700; color: #7E4A1E; }
+    .aa .a { font-size: 175px; font-weight: 600; color: transparent; -webkit-text-stroke: 3px #7E4A1E; }
+    .weights { display: flex; justify-content: center; gap: 34px; margin-top: 18px; font-size: 18px; }
+    .weights span:nth-child(1) { font-weight: 400; }
+    .weights span:nth-child(2) { font-weight: 500; }
+    .weights span:nth-child(3) { font-weight: 600; }
+    .weights span:nth-child(4) { font-weight: 700; }
+    .swatches { display: flex; justify-content: center; gap: 18px; margin-top: -110px; position: relative; z-index: 2; padding: 0 40px; }
+    .sw {
+      width: 170px; aspect-ratio: 1; border: 10px solid #fff; border-radius: 6px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.12);
+      transition: transform .3s;
+    }
+    /* Ace Maze colour palette */
+    .sw:nth-child(1) { background: #5B70FD; transform: rotate(-14deg); }
+    .sw:nth-child(2) { background: #E4E8FF; transform: rotate(20deg) translateY(14px); }
+    .sw:nth-child(3) { background: #46BB00; transform: rotate(-8deg) translateY(6px); }
+    .sw:nth-child(4) { background: #FEDB41; transform: rotate(24deg) translateY(30px); }
+    .sw:nth-child(5) { background: #FF0000; transform: rotate(-16deg) translateY(14px); }
+    .sw:hover { transform: rotate(0) scale(1.05); }
+
+    /* ---------- UI galleries ---------- */
+    .gallery { margin-top: 56px; border: 1.5px solid #e6e6e6; border-radius: 28px; position: relative; }
+    .gallery-head {
+      position: absolute; top: -22px; left: 26px;
+      background: #fff; border: none; cursor: pointer;
+      font-size: 28px; font-weight: 500; color: #111;
+      padding: 0 14px; display: flex; align-items: center; gap: 14px;
+    }
+    .chev {
+      width: 13px; height: 13px;
+      border-left: 3px solid #111; border-top: 3px solid #111;
+      transform: rotate(45deg) translate(3px, 3px);
+      transition: transform .3s;
+    }
+    .gallery:not(.open) .chev { transform: rotate(225deg) translate(3px, 3px); }
+    .gallery-body { overflow: hidden; transition: max-height .45s ease; }
+    .gallery:not(.open) .gallery-body { max-height: 0 !important; }
+    .gallery:not(.open) { min-height: 40px; }
+    .screens { display: grid; grid-template-columns: repeat(5, 1fr); gap: 26px; padding: 56px 46px 46px; align-items: start; }
+    .screen {
+      border-radius: 12px; overflow: hidden; background: #ece6f5; cursor: zoom-in;
+      box-shadow: 0 4px 14px rgba(0,0,0,.1);
+      transition: transform .3s ease, box-shadow .3s ease;
+    }
+    .screen:hover { transform: translateY(-6px); box-shadow: 0 14px 28px rgba(0,0,0,.18); }
+    .screen img { width: 100%; height: auto; }   /* whole screen shown, nothing cropped */
+
+    /* ---------- Lightbox ---------- */
+    .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.88); display: none; align-items: center; justify-content: center; z-index: 100; padding: 30px; }
+    .lightbox.show { display: flex; }
+    .lightbox img { max-width: 92vw; max-height: 90vh; border-radius: 10px; }
+    .lightbox .close { position: absolute; top: 20px; right: 28px; background: none; border: none; color: #fff; font-size: 44px; cursor: pointer; line-height: 1; }
+
+    /* ---------- Footer ---------- */
+    footer { background: #000; color: #fff; padding: 16px 60px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
+    footer .copy { font-size: 18px; }
+    footer .f-logo img { height: 100px; }
+    footer .social { display: flex; align-items: center; justify-content: flex-end; gap: 23px; }
+    footer .social span { font-size: 18px; font-weight: 500; margin-right: -8px; }
+    footer .social img { width: 50px; height: 50px; border-radius: 6px; transition: transform .25s; }
+    footer .social a:hover img { transform: translateY(-4px); }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 1100px) {
+      .nav-links a { padding: 14px 24px; font-size: 18px; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-img { max-width: 520px; margin: 0 auto; width: 100%; }
+      .ov-row { grid-template-columns: 1fr; }
+      .soft-box { padding: 56px 30px 60px; }
+      .typo { grid-template-columns: 1fr; padding: 0; }
+      .screens { grid-template-columns: repeat(3, 1fr); padding: 50px 26px 30px; }
+      .sw { width: 130px; }
+    }
+    @media (max-width: 720px) {
+      .nav-wrap { padding: 20px 16px 0; }
+      .navbar { height: auto; padding: 14px 16px; flex-direction: column; gap: 12px; border-radius: 30px; }
+      .nav-links { flex-wrap: wrap; justify-content: center; gap: 4px; }
+      .nav-links a { padding: 10px 18px; font-size: 16px; }
+      main { padding: 0 16px 60px; }
+      .page-title { gap: 10px; margin-top: 44px; }
+      .page-title h1 { font-size: 32px; }
+      .overview { padding: 28px 22px; }
+      .sec-title { font-size: 30px; }
+      .sec-sub { font-size: 16px; }
+      section.block { margin-top: 80px; }
+      .wires { grid-template-columns: 1fr; gap: 30px; max-width: 280px; }
+      .arrow { display: none; }
+      .typo .fname { font-size: 64px; }
+      .typo .chars { font-size: 20px; }
+      .aa .A { font-size: 140px; } .aa .a { font-size: 112px; }
+      .weights { gap: 16px; font-size: 15px; }
+      .swatches { flex-wrap: wrap; gap: 10px; margin-top: -80px; padding: 0; }
+      .sw { width: 30%; border-width: 6px; }
+      .ds-box { padding-bottom: 110px; }
+      .screens { grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 44px 14px 18px; }
+      .gallery-head { font-size: 22px; }
+      footer { grid-template-columns: 1fr; gap: 22px; text-align: center; padding: 20px 20px; }
+      footer .f-logo img { margin: 0 auto; }
+      footer .social { justify-content: center; flex-wrap: wrap; gap: 14px; }
+    }
+  
+    /* ===== Ace Maze ===== */
+    .g-in { padding: 60px 46px 46px; }
+    /* phone screen: whole screen shown, nothing cropped */
+    .ph { border-radius: 12px; overflow: hidden; background: #E9ECFB; border: 2px solid #2B3E55; border-bottom-width: 5px; cursor: zoom-in; }
+    .ph img { width: 100%; height: auto; }
+    .note { background: var(--soft); border-radius: 24px; padding: 28px 30px; text-align: center; font-size: 16px; line-height: 1.65; color: #4A2408; }
+    .note h4 { color: #8C5200; font-size: 26px; font-weight: 600; margin-bottom: 14px; }
+    .am-trio { display: grid; grid-template-columns: 0.6fr 1.4fr 0.6fr; gap: 26px; align-items: center; }
+    .am-trio .note { align-self: start; margin-top: 20px; }
+    .am-trio.quest .stack { display: flex; flex-direction: column; gap: 30px; }
+    .note.deco { position: relative; }
+    .note.shift { margin-left: 60px; }
+    .deco-img { position: absolute; width: 90px; bottom: -18px; }
+    .deco-img.r { right: -40px; } .deco-img.l { left: -60px; }
+    .sub-h { text-align: center; color: #8C5200; font-size: 26px; font-weight: 600; margin: 56px 0 24px; }
+    .puzzles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 760px; margin: 0 auto; align-items: start; }
+    .label { background: var(--soft); border-radius: 18px; padding: 18px; text-align: center; font-size: 15px; line-height: 1.5; color: #4A2408; margin-top: 16px; }
+    .label h5 { color: #8C5200; font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+    .outro-box { background: var(--soft); border-radius: 22px; padding: 22px; margin-top: 50px; display: grid; grid-template-columns: repeat(3, 0.8fr) 1.3fr; gap: 14px; align-items: center; }
+    .plain { text-align: center; font-size: 16px; line-height: 1.65; color: #4A2408; padding: 0 16px; }
+    .plain h4 { color: #8C5200; font-size: 30px; font-weight: 600; margin-bottom: 14px; }
+    .row-ph { display: grid; gap: 12px; margin: 60px auto 0; align-items: start; }
+    .row-ph.four { grid-template-columns: repeat(4, 1fr); max-width: 900px; }
+    .row-ph.three { grid-template-columns: repeat(3, 1fr); max-width: 680px; }
+    .row-ph.labeled { max-width: 1000px; margin-top: 0; }
+    .pill-note { background: var(--soft); border-radius: 18px; padding: 12px 14px; text-align: center; font-size: 14px; line-height: 1.5; color: #4A2408; margin-top: 18px; }
+    .cap { text-align: center; font-size: 24px; font-weight: 600; margin-top: 18px; }
+    .seasons { background: #BF6A30; border-radius: 22px; padding: 26px 22px 30px; margin-top: 90px; position: relative; }
+    .pot { position: absolute; width: 130px; top: -100px; }
+    .pot.l { left: 10px; } .pot.r { right: 10px; }
+    .season h5 { text-align: center; color: #fff; font-size: 22px; font-weight: 600; margin: 8px 0 12px; }
+    .season .strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+    .season .strip div { border-radius: 6px; overflow: hidden; aspect-ratio: 2.1 / 1; background: #F3E2D3; cursor: zoom-in; }
+    .season img { width: 100%; height: 100%; object-fit: cover; }   /* season strips are cropped to line up */
+    .collection { display: flex; flex-wrap: wrap; justify-content: center; gap: 26px 40px; max-width: 1060px; margin: 0 auto; }
+    .collection div { width: calc(25% - 30px); aspect-ratio: 1; border-radius: 6px; overflow: hidden; background: #F3E2D3; cursor: zoom-in; transition: transform .3s; }
+    .collection div:hover { transform: scale(1.04) rotate(-1deg); }
+    .collection img { width: 100%; height: 100%; object-fit: cover; }
+    @media (max-width: 1100px) {
+      .g-in { padding: 50px 22px 26px; }
+      .am-trio { grid-template-columns: 1fr 1fr; }
+      .am-trio > .note, .am-trio .stack { grid-column: 1 / -1; order: -1; }
+      .note.shift { margin: 0; }
+      .deco-img { display: none; }
+      .outro-box { grid-template-columns: repeat(3, 1fr); }
+      .outro-box .plain { grid-column: 1 / -1; order: -1; }
+      .row-ph.four { grid-template-columns: repeat(2, 1fr); }
+      .season .strip { grid-template-columns: repeat(3, 1fr); }
+      .collection div { width: calc(33% - 30px); }
+      .pot { width: 90px; top: -70px; }
+    }
+    @media (max-width: 720px) {
+      .puzzles, .row-ph.three { grid-template-columns: 1fr 1fr; }
+      .season .strip { grid-template-columns: repeat(2, 1fr); }
+      .collection div { width: calc(50% - 20px); }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- ===== Header / Navigation ===== -->
+  <header class="nav-wrap">
+    <nav class="navbar">
+      <a href="index.html" class="logo"><img src="Image/Common/Logo.png" alt="MN logo"></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="game-design.html" class="active" aria-current="page">Projects</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ===== Hero & overview ===== -->
+    <div class="page-title"><h1>Ace Maze</h1></div>
+
+    <div class="hero">
+      <div class="hero-img zoom"><img src="Image/Ace Maze/1.png" alt="Ace Maze"></div>
+      <div class="overview">
+        <h2>Product Overview</h2>
+        <p>Ace Maze is a fast-paced arrow puzzle game where players navigate intricate grids by following directional paths and clearing arrows in the correct sequence.</p>
+        <div class="ov-row">
+          <fieldset class="fieldset">
+            <legend>Tools</legend>
+            <div class="tools"><img src="Image/Common/Photoshop.png" alt="Photoshop"><img src="Image/Common/Figma.png" alt="Figma"></div>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend>Role</legend>
+            <div class="val">UI DESIGNER | GRAPHIC DESIGNER</div>
+          </fieldset>
+        </div>
+        <fieldset class="fieldset">
+          <legend>Focus</legend>
+          <div class="val">Interactive Design | Player Flow | Core Gameplay | Game State</div>
+        </fieldset>
+      </div>
+    </div>
+
+    <!-- ===== Building the gameplay (wireframes) ===== -->
+    <section class="block">
+      <h2 class="sec-title">Building the <span>Gameplay</span></h2>
+      <p class="sec-sub w-720">Designed an intuitive puzzle experience that challenges players to analyze arrow directions, plan moves, and clear increasingly complex grids.</p>
+      <div class="wires">
+        <div class="wire"><div class="shot zoom"><img src="Image/Ace Maze/2.png" alt="Paper wireframe"></div><span>Paper wireframe</span></div>
+        <div class="arrow"></div>
+        <div class="wire"><div class="shot zoom"><img src="Image/Ace Maze/3.png" alt="Lo-fi wireframe"></div><span>Lo-fi wireframe</span></div>
+        <div class="arrow"></div>
+        <div class="wire"><div class="shot zoom"><img src="Image/Ace Maze/4.png" alt="Hi-fi wireframe"></div><span>Hi-fi wireframe</span></div>
+      </div>
+    </section>
+
+    <!-- ===== Design system ===== -->
+    <section class="block">
+      <div class="soft-box ds-box">
+        <h2 class="sec-title">Design <span>System</span></h2>
+        <p class="sec-sub">Establishing a consistent visual language through typography, colors, and reusable components to ensure clarity, accessibility, and a cohesive gameplay experience.</p>
+        <div class="typo">
+          <div>
+            <h5>Typography</h5>
+            <div class="fname">Onest</div>
+            <div class="chars">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>1234567890</div>
+          </div>
+          <div class="aa-wrap">
+            <div class="aa"><span class="A">A</span><span class="a">a</span></div>
+            <div class="weights"><span>Regular</span><span>Medium</span><span>Semibold</span><span>Bold</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="swatches"><span class="sw"></span><span class="sw"></span><span class="sw"></span><span class="sw"></span><span class="sw"></span></div>
+    </section>
+
+    <!-- ===== UI design ===== -->
+    <section class="block">
+      <h2 class="sec-title">UI <span>Design</span></h2>
+      <p class="sec-sub">A collection of the main game interfaces, showcasing the home screen, arrow puzzles, outros, quests and collections, daily challenges, monetization, and other features.</p>
+
+      <!-- ===== Core screens ===== -->
+      <div class="gallery">
+        <button class="gallery-head" type="button" aria-expanded="false">Core Screens <span class="chev"></span></button>
+        <div class="gallery-body"><div class="g-in">
+          <div class="am-trio">
+            <div class="ph zoom"><img src="Image/Ace Maze/5.png" alt="Loading screen"></div>
+            <div class="note"><h4>Game Flow &amp; Navigation</h4>The game flow introduces players to Ace Maze through a branded loading screen, followed by a home screen that brings level progression, rewards, and daily challenges into one place. The interface highlights the current level and difficulty, tracks progress toward milestones, and provides quick access to missions, VIP rewards, and settings. A consistent visual hierarchy, clear navigation, and prominent primary actions help players understand their progress and jump into gameplay with minimal friction.</div>
+            <div class="ph zoom"><img src="Image/Ace Maze/6.png" alt="Home screen"></div>
+          </div>
+
+          <h3 class="sub-h">Puzzles</h3>
+          <div class="puzzles">
+            <div><div class="ph zoom"><img src="Image/Ace Maze/7.png" alt="Hint"></div><div class="label"><h5>Hint</h5>Highlights the correct path in green to guide players through tricky puzzles.</div></div>
+            <div><div class="ph zoom"><img src="Image/Ace Maze/8.png" alt="Grid"></div><div class="label"><h5>Grid</h5>Structures arrow paths for easier navigation and strategic planning.</div></div>
+            <div><div class="ph zoom"><img src="Image/Ace Maze/9.png" alt="Wrong move"></div><div class="label"><h5>Wrong Move</h5>Highlights incorrect moves in red to provide instant visual feedback.</div></div>
+          </div>
+
+          <div class="outro-box">
+            <div class="ph zoom"><img src="Image/Ace Maze/10.png" alt="Outro 1"></div>
+            <div class="ph zoom"><img src="Image/Ace Maze/11.png" alt="Outro 2"></div>
+            <div class="ph zoom"><img src="Image/Ace Maze/12.png" alt="Outro 3"></div>
+            <div class="plain"><h4>Outro</h4>The outro celebrates puzzle completion with a “Perfect!” message and a detailed score breakdown showing precision bonus, clear points, and streak bonus. A mini leaderboard displays top player rankings, scores, and reward tiers, adding a competitive element that motivates players to improve their performance and aim for higher ranks.</div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- ===== Quest Center ===== -->
+      <div class="gallery">
+        <button class="gallery-head" type="button" aria-expanded="false">Quest Center <span class="chev"></span></button>
+        <div class="gallery-body"><div class="g-in">
+          <div class="am-trio quest">
+            <div class="ph zoom"><img src="Image/Ace Maze/13.png" alt="Daily quest"></div>
+            <div class="stack">
+              <div class="note deco"><img class="deco-img r" src="Image/Ace Maze/14.png" alt=""><h4>Daily Quest</h4>The Daily Quest section encourages regular gameplay through goal-based tasks. The My Journey feature adds a visual progression system where a flower character grows through milestones, making progress more engaging and rewarding.</div>
+              <div class="note deco shift"><img class="deco-img l" src="Image/Ace Maze/16.png" alt=""><h4>Achievement</h4>The achievement system lets players track their accomplishments through collectible badges and visible progress. It creates a sense of growth and long-term motivation, encouraging players to continue playing and work toward new milestones.</div>
+            </div>
+            <div class="ph zoom"><img src="Image/Ace Maze/15.png" alt="Achievement"></div>
+          </div>
+
+          <div class="row-ph four">
+            <div class="ph zoom">
+              <img src="Image/Ace Maze/17.png" alt="Garden collection 1" loading="lazy">
+            </div>
+            <div class="ph zoom">
+              <img src="Image/Ace Maze/18.png" alt="Garden collection 2" loading="lazy">
+            </div>
+            <div class="ph zoom">
+              <img src="Image/Ace Maze/19.png" alt="Garden collection 3" loading="lazy">
+            </div>
+            <div class="ph zoom">
+              <img src="Image/Ace Maze/20.png" alt="Garden collection 4" loading="lazy">
+            </div>
+          </div>
+          <div class="cap">Full Garden Collection Flow</div>
+
+          <div class="row-ph three">
+            <div class="ph zoom">
+              <img src="Image/Ace Maze/21.png" alt="Badge collection 1" loading="lazy">
+            </div>
+            <div class="ph zoom">
+              <img src="Image/Ace Maze/22.png" alt="Badge collection 2" loading="lazy">
+            </div>
+            <div class="ph zoom">
+              <img src="Image/Ace Maze/23.png" alt="Badge collection 3" loading="lazy">
+            </div>
+          </div>
+          <div class="cap">Badge Collection Flow</div>
+
+          <div class="seasons">
+            <img class="pot l" src="Image/Ace Maze/24.png" alt="">
+            <img class="pot r" src="Image/Ace Maze/25.png" alt="">
+            <div class="season">
+              <h5>Summer</h5>
+              <div class="strip">
+                <div>
+                  <img src="Image/Ace Maze/26.png" alt="Summer 1" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/27.png" alt="Summer 2" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/28.png" alt="Summer 3" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/29.png" alt="Summer 4" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/30.png" alt="Summer 5" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/31.png" alt="Summer 6" loading="lazy">
+                </div>
+              </div>
+            </div>
+            <div class="season">
+              <h5>Winter</h5>
+              <div class="strip">
+                <div>
+                  <img src="Image/Ace Maze/32.png" alt="Winter 1" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/33.png" alt="Winter 2" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/34.png" alt="Winter 3" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/35.png" alt="Winter 4" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/36.png" alt="Winter 5" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/37.png" alt="Winter 6" loading="lazy">
+                </div>
+              </div>
+            </div>
+            <div class="season">
+              <h5>Spring</h5>
+              <div class="strip">
+                <div>
+                  <img src="Image/Ace Maze/38.png" alt="Spring 1" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/39.png" alt="Spring 2" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/40.png" alt="Spring 3" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/41.png" alt="Spring 4" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/42.png" alt="Spring 5" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/43.png" alt="Spring 6" loading="lazy">
+                </div>
+              </div>
+            </div>
+            <div class="season">
+              <h5>Autumn</h5>
+              <div class="strip">
+                <div>
+                  <img src="Image/Ace Maze/44.png" alt="Autumn 1" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/45.png" alt="Autumn 2" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/46.png" alt="Autumn 3" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/47.png" alt="Autumn 4" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/48.png" alt="Autumn 5" loading="lazy">
+                </div>
+                <div>
+                  <img src="Image/Ace Maze/49.png" alt="Autumn 6" loading="lazy">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- ===== Daily Challenge ===== -->
+      <div class="gallery">
+        <button class="gallery-head" type="button" aria-expanded="false">Daily Challenge <span class="chev"></span></button>
+        <div class="gallery-body"><div class="g-in">
+          <div class="am-trio">
+            <div class="ph zoom"><img src="Image/Ace Maze/50.png" alt="Daily challenge calendar"></div>
+            <div class="note"><h4>Feature Flow &amp; Navigation</h4>The Daily Challenge turns consistency into a rewarding ritual, with a calendar that celebrates completed puzzles and milestone rewards that keep players coming back. Each day brings a timed arrow puzzle where speed earns stars, adding a competitive spark and encouraging players to beat their best performance. Together, daily progress and star ratings make every challenge feel like another step toward mastery.</div>
+            <div class="ph zoom"><img src="Image/Ace Maze/51.png" alt="Daily challenge puzzle"></div>
+          </div>
+
+          <h3 class="sub-h">Outro Flow</h3>
+          <div class="row-ph four labeled">
+            <div><div class="ph zoom"><img src="Image/Ace Maze/52.png" alt="Daily challenge reward: puzzle pieces"></div><p class="pill-note">Rewards players with puzzle pieces, making every challenge feel rewarding.</p></div>
+            <div><div class="ph zoom"><img src="Image/Ace Maze/53.png" alt="Completed artwork revealed"></div><p class="pill-note">Unveils the completed artwork for a satisfying moment of discovery.</p></div>
+            <div><div class="ph zoom"><img src="Image/Ace Maze/54.png" alt="Daily streak celebration"></div><p class="pill-note">Celebrates players’ consistency and reinforces their daily playing habit.</p></div>
+            <div><div class="ph zoom"><img src="Image/Ace Maze/55.png" alt="Replay previous day puzzle"></div><p class="pill-note">Lets players revisit the previous day’s puzzle through a dedicated button.</p></div>
+          </div>
+
+          <h3 class="sub-h">Daily Challenge Collection</h3>
+          <div class="collection">
+            <div>
+              <img src="Image/Ace Maze/56.png" alt="Brazil" loading="lazy">
+            </div>
+            <div>
+              <img src="Image/Ace Maze/57.png" alt="Christmas" loading="lazy">
+            </div>
+            <div>
+              <img src="Image/Ace Maze/58.png" alt="Halloween" loading="lazy">
+            </div>
+            <div>
+              <img src="Image/Ace Maze/59.png" alt="Peru" loading="lazy">
+            </div>
+            <div>
+              <img src="Image/Ace Maze/60.png" alt="Spain" loading="lazy">
+            </div>
+            <div>
+              <img src="Image/Ace Maze/61.png" alt="Thanksgiving" loading="lazy">
+            </div>
+            <div>
+              <img src="Image/Ace Maze/62.png" alt="Thailand" loading="lazy">
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- ===== Monetization ===== -->
+      <div class="gallery">
+        <button class="gallery-head" type="button" aria-expanded="false">Monetization <span class="chev"></span></button>
+        <div class="gallery-body">
+          <div class="screens">
+            <div class="screen"><img src="Image/Ace Maze/63.png" alt="Monetization 1" loading="lazy"></div>
+            <div class="screen"><img src="Image/Ace Maze/64.png" alt="Monetization 2" loading="lazy"></div>
+            <div class="screen"><img src="Image/Ace Maze/65.png" alt="Monetization 3" loading="lazy"></div>
+            <div class="screen"><img src="Image/Ace Maze/66.png" alt="Monetization 4" loading="lazy"></div>
+            <div class="screen"><img src="Image/Ace Maze/67.png" alt="Monetization 5" loading="lazy"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Other features ===== -->
+      <div class="gallery">
+        <button class="gallery-head" type="button" aria-expanded="false">Other Features <span class="chev"></span></button>
+        <div class="gallery-body">
+          <div class="screens">
+            <div class="screen"><img src="Image/Ace Maze/68.png" alt="Other Features 1" loading="lazy"></div>
+            <div class="screen"><img src="Image/Ace Maze/69.png" alt="Other Features 2" loading="lazy"></div>
+            <div class="screen"><img src="Image/Ace Maze/70.png" alt="Other Features 3" loading="lazy"></div>
+            <div class="screen"><img src="Image/Ace Maze/71.png" alt="Other Features 4" loading="lazy"></div>
+            <div class="screen"><img src="Image/Ace Maze/72.png" alt="Other Features 5" loading="lazy"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    <div class="copy">© 2026 By Mariyam Nesha</div>
+    <a href="index.html" class="f-logo"><img src="Image/Common/Logo.png" alt="MN logo"></a>
+    <div class="social">
+      <span>Follow :</span>
+      <a href="https://www.behance.net/mariyamnesha3" target="_blank" rel="noopener" aria-label="Behance"><img src="Image/Common/Behance.png" alt="Behance"></a>
+      <a href="https://dribbble.com/mary333333333" target="_blank" rel="noopener" aria-label="Dribbble"><img src="Image/Common/Dribbble.png" alt="Dribbble"></a>
+      <a href="mailto:mariyamnesha3@gmail.com" aria-label="Gmail"><img src="Image/Common/Gmail.png" alt="Gmail"></a>
+      <a href="https://www.linkedin.com/in/mariyam-nesha-05b04a190/" target="_blank" rel="noopener" aria-label="LinkedIn"><img src="Image/Common/LinkedIn.png" alt="LinkedIn"></a>
+    </div>
+  </footer>
+
+  <!-- ===== Lightbox (click an image to enlarge) ===== -->
+  <div class="lightbox" id="lightbox">
+    <button class="close" type="button" aria-label="Close">&times;</button>
+    <img alt="">
+  </div>
+
+  <script>
+    function fit() {
+      document.querySelectorAll('.gallery-body').forEach(function (b) { b.style.maxHeight = b.scrollHeight + 'px'; });
+    }
+    document.querySelectorAll('.gallery').forEach(function (g) {
+      var head = g.querySelector('.gallery-head');
+      head.addEventListener('click', function () {
+        fit();
+        var open = g.classList.toggle('open');
+        head.setAttribute('aria-expanded', open);
+      });
+    });
+    fit();
+    window.addEventListener('load', fit);
+    window.addEventListener('resize', fit);
+    /* lazy images can change the height after loading – re-measure each time one loads */
+    document.querySelectorAll('.gallery img').forEach(function (img) { img.addEventListener('load', fit); });
+
+    var lb = document.getElementById('lightbox');
+    var lbImg = lb.querySelector('img');
+    document.querySelectorAll('.zoom, .screen, .season .strip div, .collection div').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var img = el.querySelector('img');
+        lbImg.src = img.src;
+        lbImg.alt = img.alt;
+        lb.classList.add('show');
+      });
+    });
+    function closeLb() { lb.classList.remove('show'); }
+    lb.addEventListener('click', function (e) { if (e.target !== lbImg) closeLb(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLb(); });
+  </script>
+</body>
+</html>
